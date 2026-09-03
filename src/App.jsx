@@ -53,7 +53,7 @@ useEffect(() => {
       setTranslationResult(null);
 
       const response = await fetch(
-        "http://localhost:3001/api/translate",
+        "/api/translate",
         {
           method: "POST",
           headers: {
@@ -494,7 +494,7 @@ const speakText = async () => {
 
   try {
     const response = await fetch(
-      "http://localhost:3001/api/tts",
+      "/api/tts",
       {
         method: "POST",
         headers: {
@@ -534,7 +534,7 @@ const speakInputText = async () => {
 
   try {
     const response = await fetch(
-      "http://localhost:3001/api/tts",
+      "/api/tts",
       {
         method: "POST",
         headers: {
