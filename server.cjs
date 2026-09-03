@@ -18,6 +18,7 @@ const voices = {
   "da-DK": "da-DK-Chirp3-HD-Kore",
   "ko-KR": "ko-KR-Chirp3-HD-Kore",
   "ja-JP": "ja-JP-Chirp3-HD-Kore",
+  "fr-FR": "fr-FR-Chirp3-HD-Kore",
 };
 
 app.get("/", (req, res) => {
@@ -96,6 +97,7 @@ const languageCodes = {
   "da-DK": "da",
   "ko-KR": "ko",
   "ja-JP": "ja",
+  "fr-FR": "fr",
 };
 
 
@@ -105,6 +107,7 @@ const targetLanguages = {
   "da-DK": ["ko", "en"],
   "ko-KR": ["en", "da"],
   "ja-JP": ["ko", "en"],
+  "fr-FR": ["ko", "en"],
 };
 
 
@@ -113,6 +116,7 @@ const languageNames = {
   da: "Dansk",
   ko: "한국어",
   ja: "日本語",
+  fr: "Français",
 };
 
 

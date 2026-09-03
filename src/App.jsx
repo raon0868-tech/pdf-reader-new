@@ -24,13 +24,16 @@ function App() {
 const [translationResult, setTranslationResult] = useState(null);
 const [translationOpen, setTranslationOpen] = useState(false);
 
-  const [language, setLanguage] = useState("da-DK");
+const [ttsText, setTtsText] = useState("");
+
+const [language, setLanguage] = useState("da-DK");
   const [ocrLoading, setOcrLoading] = useState(false);
 
   const getOcrLanguage = (currentLanguage) => {
     if (currentLanguage === "en-US") return "eng";
     if (currentLanguage === "ko-KR") return "kor";
     if (currentLanguage === "ja-JP") return "jpn";
+    if (currentLanguage === "fr-FR") return "fra";
     return "dan";
   };
 
@@ -483,52 +486,92 @@ setTranslationOpen(true);
   };
 
   // =========================
-  // TTS
-  // =========================
+// TTS
+// =========================
 
-  const speakText = async () => {
-    if (!selectedText) return;
+const speakText = async () => {
+  if (!selectedText) return;
 
-    try {
-      const response = await fetch(
-        "http://localhost:3001/api/tts",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            text: selectedText,
-            language: language,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error(data);
-        alert("TTS 오류가 발생했습니다.");
-        return;
+  try {
+    const response = await fetch(
+      "http://localhost:3001/api/tts",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: selectedText,
+          language: language,
+        }),
       }
+    );
 
-      const audio = new Audio(
-        "data:audio/mp3;base64," +
-        data.audioContent
-      );
+    const data = await response.json();
 
-      await audio.play();
-    } catch (error) {
-      console.error(error);
-      alert(
-        "TTS 서버에 연결할 수 없습니다."
-      );
+    if (!response.ok) {
+      console.error(data);
+      alert("TTS 오류가 발생했습니다.");
+      return;
     }
-  };
 
-  // =========================
-  // 언어 변경
-  // =========================
+    const audio = new Audio(
+      "data:audio/mp3;base64," +
+      data.audioContent
+    );
+
+    await audio.play();
+  } catch (error) {
+    console.error(error);
+    alert(
+      "TTS 서버에 연결할 수 없습니다."
+    );
+  }
+};
+
+const speakInputText = async () => {
+  if (!ttsText.trim()) return;
+
+  try {
+    const response = await fetch(
+      "http://localhost:3001/api/tts",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: ttsText.trim(),
+          language: language,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error(data);
+      alert("TTS 오류가 발생했습니다.");
+      return;
+    }
+
+    const audio = new Audio(
+      "data:audio/mp3;base64," +
+      data.audioContent
+    );
+
+    await audio.play();
+  } catch (error) {
+    console.error(error);
+    alert(
+      "TTS 서버에 연결할 수 없습니다."
+    );
+  }
+};
+
+// =========================
+// 언어 변경
+// =========================
 
   const changeLanguage = async (newLanguage) => {
     setLanguage(newLanguage);
@@ -611,6 +654,18 @@ setTranslationOpen(true);
             >
               日本語
             </button>
+            <button
+  className={
+    language === "fr-FR"
+      ? "active"
+      : ""
+  }
+  onClick={() =>
+    changeLanguage("fr-FR")
+  }
+>
+  Français
+</button>
           </div>
 
           <div className="controls">
@@ -752,6 +807,34 @@ setTranslationOpen(true);
   >
     🔊
   </button>
+</div>
+
+<div className="pronunciation-panel">
+  <h3>🔊 Pronunciation</h3>
+
+  <div className="pronunciation-input-row">
+    <input
+      type="text"
+      value={ttsText}
+      onChange={(event) => {
+        setTtsText(event.target.value);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          speakInputText();
+        }
+      }}
+      placeholder="단어나 문장을 입력하세요"
+    />
+
+    <button
+      onClick={speakInputText}
+      disabled={!ttsText.trim()}
+      title="발음 듣기"
+    >
+      🔊
+    </button>
+  </div>
 </div>
 
     {translationResult?.error ? (
