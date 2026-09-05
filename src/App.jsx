@@ -5539,7 +5539,7 @@ setScreen("reader");
 
         <div className="app-signature">
           <div className="app-version">
-            v0.2.0
+            v0.2.1
           </div>
 
           <div className="app-message">
