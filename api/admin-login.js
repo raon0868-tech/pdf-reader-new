@@ -1,6 +1,4 @@
-﻿const crypto = require("crypto");
-
-export default async function handler(req, res) {
+﻿export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed",
@@ -8,7 +6,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { password } = req.body;
+    const { password } = req.body || {};
 
     if (!password) {
       return res.status(401).json({
@@ -16,21 +14,21 @@ export default async function handler(req, res) {
       });
     }
 
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminPassword =
+      process.env.ADMIN_PASSWORD;
 
     if (!adminPassword) {
+      console.error(
+        "ADMIN_PASSWORD 환경변수가 없습니다."
+      );
+
       return res.status(500).json({
-        error: "관리자 비밀번호가 설정되지 않았습니다.",
+        error:
+          "관리자 비밀번호가 서버에 설정되지 않았습니다.",
       });
     }
 
-    const passwordBuffer = Buffer.from(password);
-    const adminBuffer = Buffer.from(adminPassword);
-
-    if (
-      passwordBuffer.length !== adminBuffer.length ||
-      !crypto.timingSafeEqual(passwordBuffer, adminBuffer)
-    ) {
+    if (password !== adminPassword) {
       return res.status(401).json({
         error: "비밀번호가 올바르지 않습니다.",
       });
@@ -40,10 +38,13 @@ export default async function handler(req, res) {
       ok: true,
     });
   } catch (error) {
-    console.error("관리자 로그인 오류:", error);
+    console.error(
+      "관리자 로그인 오류:",
+      error
+    );
 
     return res.status(500).json({
-      error: "로그인 중 오류가 발생했습니다.",
+      error: "관리자 로그인 중 오류가 발생했습니다.",
     });
   }
 }
