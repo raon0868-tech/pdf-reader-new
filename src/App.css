@@ -10,7 +10,7 @@ body {
 
 .app {
   padding: 30px;
-  max-width: 1200px;
+  max-width: none;
   margin: 0 auto;
 }
 
@@ -167,43 +167,52 @@ h1 {
   background: #fff;
   border-radius: 8px;
 }
+
+ /* =========================
+    Dictionary
+    ========================= */
+
 .dictionary-panel {
   position: fixed;
   top: 250px;
   right: 30px;
-  width: 320px;
-  max-height: 70vh;
-  padding: 20px;
+  width: 240px;
+  max-height: 40vh;
+  padding: 18px;
   background: white;
   border: 1px solid #ccc;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   z-index: 900;
   overflow-y: auto;
+  font-size: 14px;
 }
 
 .dictionary-translation {
   display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
 }
 
 .dictionary-translation span::after {
   content: " :";
 }
+
 .translation-original {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 15px;
+  gap: 6px;
+  margin-bottom: 12px;
   font-weight: bold;
+  font-size: 15px;
 }
 
 .translation-speak-button {
   border: none;
   background: transparent;
   padding: 2px 4px;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
 }
 
@@ -211,30 +220,234 @@ h1 {
   background: #f0f0f0;
   border-radius: 6px;
 }
-.app-signature {
+
+/* =========================
+   Today's Words
+   ========================= */
+
+.today-words-panel {
+
   position: fixed;
-  left: 50%;
-  bottom: 80px;
-  transform: translateX(-50%);
-  text-align: center;
+
+  top: 118px;
+
+  left: 30px;
+
+  width: 240px;
+
+  max-height: calc(100vh - 158px);
+
+  padding: 20px;
+
+  background: white;
+
+  border: 1px solid #ccc;
+
+  border-radius: 12px;
+
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+
+  z-index: 2000;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
 }
 
+.today-words-title {
 
-.app-version {
+  margin-bottom: 10px;
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+}
+
+.today-words-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.today-words-header h3 {
+  margin: 0;
   font-size: 16px;
-  margin-top: 2px;
+  white-space: nowrap;
 }
 
-.app-message {
-  margin-top: 8px;
-  color: #999;
-  font-size: 20px;
+.date-move-button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
 }
+
+.date-move-button:hover {
+  background: #f0f0f0;
+  border-radius: 6px;
+}
+
+.date-move-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.today-words-empty {
+  color: #888;
+
+  margin: 0;
+}
+
+.today-words-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.today-word-item {
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+
+  padding: 10px 12px;
+
+  background: #f7f7f7;
+
+  border-radius: 8px;
+
+  font-size: 15px;
+
+  cursor: default;
+}
+
+.today-word-left {
+  display: flex;
+
+  align-items: center;
+
+  min-width: 0;
+}
+
+.today-word-text {
+  flex-shrink: 0;
+}
+
+.today-word-speak-button {
+  margin-left: 6px;
+
+  padding: 0;
+
+  border: none;
+
+  background: none;
+
+  cursor: pointer;
+
+  font-size: 14px;
+}
+
+.today-word-star-button {
+  margin-left: auto;
+
+  padding: 0;
+
+  border: none;
+
+  background: none;
+
+  cursor: pointer;
+
+  font-size: 18px;
+}
+/* =========================
+   Today's Words context menu
+   ========================= */
+
+.today-word-context-menu {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 3000;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-width: 180px;
+  max-width: 280px;
+
+  padding: 10px 12px;
+
+  background: white;
+  color: #222;
+
+  border: 1px solid rgba(128, 128, 128, 0.25);
+  border-radius: 8px;
+
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+.today-word-context-meaning {
+  flex: 1;
+  min-width: 0;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.today-word-context-more {
+  flex-shrink: 0;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  font-size: 18px;
+  line-height: 1;
+
+  padding: 0 4px;
+}
+
+.today-word-context-delete {
+  flex-shrink: 0;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  padding: 0 4px;
+}
+
+.today-word-context-delete:hover {
+  background: #f5f5f5;
+}
+
+/* =========================
+   Pronunciation
+   ========================= */
+
 .pronunciation-panel {
   position: fixed;
   top: 118px;
   right: 30px;
-  width: 320px;
+  width: 240px;
   padding: 20px;
   background: white;
   border: 1px solid #ccc;
@@ -249,21 +462,27 @@ h1 {
 }
 
 .pronunciation-input-row {
+  position: relative;
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .pronunciation-input-row input {
-  flex: 1;
-  min-width: 0;
-  padding: 9px 10px;
+  width: 210px;
+  flex: none;
+  box-sizing: border-box;
+  padding: 8px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
 }
 
 .pronunciation-input-row button {
-  flex-shrink: 0;
+  position: absolute;
+  right: 0;
   border: none;
   background: transparent;
   padding: 4px 6px;
@@ -279,4 +498,394 @@ h1 {
 .pronunciation-input-row button:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+/* =========================
+   Home
+   ========================= */
+
+.home-screen h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* =========================
+   PDF Library
+   ========================= */
+
+.book-list {
+  display: grid;
+  grid-template-columns: repeat(3, 150px);
+  gap: 20px;
+  align-items: start;
+}
+
+.book-card {
+  position: relative;
+  width: 130px;
+  min-width: 130px;
+  height: 230px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-open-button {
+  width: 130px;
+  min-width: 130px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.book-cover,
+.book-cover-placeholder {
+  width: 130px;
+  height: 182px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  object-fit: cover;
+  background: #e5e5e5;
+  border-radius: 8px;
+}
+
+.book-cover-placeholder {
+  font-size: 18px;
+  color: #777;
+}
+
+.book-title {
+  height: 50px;
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.add-book {
+  width: 130px;
+  height: 182px;
+}
+
+.add-book-button {
+  width: 130px;
+  height: 182px;
+
+  border: 2px dashed #aaa;
+  border-radius: 8px;
+
+  background: #f7f7f7;
+  color: #555;
+
+  font-size: 17px;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-book-button:hover {
+  background: #eeeeee;
+  border-color: #777;
+  color: #222;
+}
+
+/* =========================
+   PDF menu
+   ========================= */
+
+.book-menu {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.book-menu-button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+
+  border: none;
+  border-radius: 6px;
+
+  background: white;
+  color: #555;
+
+  font-size: 16px;
+  line-height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.book-menu-button:hover {
+  background: #eeeeee;
+}
+
+.book-menu-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+
+  width: 100px;
+  padding: 4px;
+
+  border: 1px solid #ddd;
+  border-radius: 8px;
+
+  background: white;
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+
+  z-index: 10;
+}
+
+.book-menu-dropdown button {
+  width: 100%;
+  padding: 8px;
+
+  border: none;
+  border-radius: 5px;
+
+  background: transparent;
+  color: #777;
+
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.book-menu-dropdown button:hover {
+  background: #f5f5f5;
+}
+
+.book-delete-button:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* =========================
+   Home word list
+   ========================= */
+
+.home-word-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+
+  width: 100%;
+  padding: 8px 0;
+
+  border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.home-word-text {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.home-word-speak-button {
+  flex-shrink: 0;
+}
+
+.home-word-star-button {
+  flex-shrink: 0;
+}
+.home-word-text {
+font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.home-word-speak-button {
+  flex-shrink: 0;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.home-word-speak-button:hover {
+  opacity: 0.65;
+}
+
+.home-word-star-button {
+  flex-shrink: 0;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  font-size: 19px;
+  line-height: 1;
+
+  filter: brightness(1.05);
+}
+
+.home-word-star-button:hover {
+  transform: scale(1.08);
+}
+
+/* =========================
+   Wordbook
+   ========================= */
+
+.wordbook-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.wordbook-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: 100%;
+  padding: 10px 0;
+
+  border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.wordbook-word {
+  flex: 1;
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wordbook-speak-button {
+  flex-shrink: 0;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.wordbook-star-button {
+  flex-shrink: 0;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  font-size: 19px;
+  line-height: 1;
+}
+
+.wordbook-speak-button:hover,
+.wordbook-star-button:hover {
+  opacity: 0.7;
+}
+
+/* =========================
+   Footer
+   ========================= */
+
+.app-signature {
+  margin-top: 50px;
+  padding: 20px 0 30px;
+
+  text-align: center;
+}
+
+.app-version {
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+.app-message {
+  margin-top: 8px;
+  color: #999;
+  font-size: 20px;
+}
+.home-screen .language-buttons {
+  justify-content: center;
+}
+
+.home-month-date-group {
+  width: 100%;
+  padding: 10px 0 14px;
+}
+
+.home-month-date {
+  font-size: 11px;
+  color: #888;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+.home-month-word-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.home-month-word-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 28px;
+  padding-left: 0.8cm;
+  gap: 8px;
+}
+
+.home-month-word-text {
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.home-month-word-speak-button,
+.home-month-word-star-button {
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.home-month-word-speak-button {
+  font-size: 15px;
+}
+
+.home-month-word-star-button {
+  font-size: 18px;
+  line-height: 1;
 }
