@@ -4266,8 +4266,16 @@ setScreen("reader");
 
         const [ttsResponse, translateResponse] =
           await Promise.all([
-            fetch("/api/tts-usage"),
-            fetch("/api/translate-usage"),
+            fetch("/api/admin-usage", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ password }),
+}),
+            fetch("/api/admin-usage", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ password }),
+}),
           ]);
 
         const ttsData =
@@ -6536,6 +6544,7 @@ setScreen("reader");
 }
 
 export default App;
+
 
 
 
