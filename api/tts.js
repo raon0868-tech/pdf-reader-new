@@ -1,3 +1,7 @@
+import { Redis } from "@upstash/redis";
+
+const redis = Redis.fromEnv();
+
 const voices = {
   "en-US": "en-US-Chirp3-HD-Kore",
   "da-DK": "da-DK-Chirp3-HD-Kore",
@@ -60,6 +64,23 @@ export default async function handler(req, res) {
           data.error?.message ||
           "Google TTS 요청에 실패했습니다.",
       });
+    }
+
+    // Google TTS 요청이 성공한 경우에만 사용량 기록
+    try {
+      const today = new Date();
+
+      const year = today.getUTCFullYear();
+      const month = String(today.getUTCMonth() + 1).padStart(2, "0");
+
+      const usageKey = `tts:chars:${year}-${month}`;
+
+      const characterCount = Array.from(text).length;
+
+      await redis.incrby(usageKey, characterCount);
+    } catch (usageError) {
+      // 사용량 기록에 문제가 생겨도 TTS 자체는 정상적으로 작동하도록 함
+      console.error("TTS 사용량 기록 오류:", usageError);
     }
 
     return res.status(200).json({
