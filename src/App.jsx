@@ -1683,6 +1683,19 @@ const deleteWordFromDatabase =
   };
 
 function App() {
+  const [adminPassword, setAdminPassword] =
+    useState("");
+  const [adminLoggedIn, setAdminLoggedIn] =
+    useState(false);
+  const [adminError, setAdminError] =
+    useState("");
+  const [adminLoading, setAdminLoading] =
+    useState(false);
+  const [ttsUsage, setTtsUsage] =
+    useState(null);
+  const [translateUsage, setTranslateUsage] =
+    useState(null);
+
   const canvasRef =
     useRef(null);
 
@@ -4222,18 +4235,6 @@ setScreen("reader");
   // =========================
 
   if (screen === "admin") {
-    const [adminPassword, setAdminPassword] =
-      useState("");
-    const [adminLoggedIn, setAdminLoggedIn] =
-      useState(false);
-    const [adminError, setAdminError] =
-      useState("");
-    const [adminLoading, setAdminLoading] =
-      useState(false);
-    const [ttsUsage, setTtsUsage] =
-      useState(null);
-    const [translateUsage, setTranslateUsage] =
-      useState(null);
 
     const loginAdmin = async () => {
       setAdminLoading(true);
@@ -6535,5 +6536,6 @@ setScreen("reader");
 }
 
 export default App;
+
 
 
