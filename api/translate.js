@@ -1,3 +1,10 @@
+﻿import { Redis } from "@upstash/redis";
+
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
+
 const languageCodes = {
   "en-US": "en",
   "da-DK": "da",
@@ -74,9 +81,35 @@ export default async function handler(req, res) {
           );
         }
 
+        try {
+          const today = new Date();
+
+          const year = today.getUTCFullYear();
+          const month = String(
+            today.getUTCMonth() + 1
+          ).padStart(2, "0");
+
+          const usageKey =
+            `translate:chars:${year}-${month}`;
+
+          const characterCount =
+            Array.from(text).length;
+
+          await redis.incrby(
+            usageKey,
+            characterCount
+          );
+        } catch (usageError) {
+          console.error(
+            "번역 사용량 기록 오류:",
+            usageError
+          );
+        }
+
         return {
           language: languageNames[targetLanguage],
-          text: data.data.translations[0].translatedText,
+          text:
+            data.data.translations[0].translatedText,
         };
       })
     );
@@ -88,7 +121,9 @@ export default async function handler(req, res) {
     console.error(error);
 
     return res.status(500).json({
-      error: error.message || "번역 중 오류가 발생했습니다.",
+      error:
+        error.message ||
+        "번역 중 오류가 발생했습니다.",
     });
   }
 }
