@@ -5604,19 +5604,10 @@ setScreen("reader");
             <div
   style={{
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
-    gap: "10px",
   }}
 >
-  <span style={{ fontSize: "12px", color: "#888" }}>
-    TTS{" "}
-    {ttsUsage
-      ? ((ttsUsage.characters / ttsUsage.limit) * 100).toFixed(1)
-      : "0.0"}
-    %
-  </span>
-
   <button
     onClick={() => setScreen("admin")}
     style={{
@@ -5631,12 +5622,21 @@ setScreen("reader");
     테레사에게. 나랑 같이 공부해줘서 고마워요.
   </button>
 
-  <span style={{ fontSize: "12px", color: "#888" }}>
-    {translateUsage
+  <div
+    style={{
+      marginTop: "4px",
+      fontSize: "12px",
+      color: "#888",
+    }}
+  >
+    {ttsUsage
+      ? ((ttsUsage.characters / ttsUsage.limit) * 100).toFixed(1)
+      : "0.0"}
+    % / {translateUsage
       ? ((translateUsage.characters / translateUsage.limit) * 100).toFixed(1)
       : "0.0"}
-    % 번역
-  </span>
+    %
+  </div>
 </div>
           </div>
         </div>
@@ -6301,6 +6301,7 @@ setScreen("reader");
 }
 
 export default App;
+
 
 
 
