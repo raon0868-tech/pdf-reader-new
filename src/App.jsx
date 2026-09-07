@@ -4278,7 +4278,6 @@ setScreen("reader");
       </div>
     );
   }
-=======
 
   if (
     screen === "home"
@@ -6266,6 +6265,7 @@ setScreen("reader");
 }
 
 export default App;
+
 
 
 
