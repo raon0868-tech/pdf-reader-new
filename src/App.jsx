@@ -4235,307 +4235,30 @@ setScreen("reader");
   // =========================
 
   if (screen === "admin") {
-
-    const loginAdmin = async () => {
-      setAdminLoading(true);
-      setAdminError("");
-
-      try {
-        const response = await fetch(
-          "/api/admin-login",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              password: adminPassword,
-            }),
-          }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          setAdminError(
-            data.error ||
-              "로그인에 실패했습니다."
-          );
-          return;
-        }
-
-        const [ttsResponse, translateResponse] =
-          await Promise.all([
-            fetch("/api/admin-usage", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ password }),
-}),
-            fetch("/api/admin-usage", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ password }),
-}),
-          ]);
-
-        const ttsData =
-          await ttsResponse.json();
-        const translateData =
-          await translateResponse.json();
-
-        setTtsUsage(ttsData);
-        setTranslateUsage(
-          translateData
-        );
-        setAdminLoggedIn(true);
-      } catch (error) {
-        console.error(error);
-        setAdminError(
-          "서버에 연결할 수 없습니다."
-        );
-      } finally {
-        setAdminLoading(false);
-      }
-    };
-
-    if (!adminLoggedIn) {
-      return (
-        <div className="app">
-          <h1
-            onClick={() => setScreen("home")}
-            style={{
-              cursor: "pointer",
-            }}
-          >
-            PDF Reader
-          </h1>
-
-          <div
-            style={{
-              maxWidth: "420px",
-              width: "100%",
-              margin: "80px auto",
-              padding: "30px",
-              boxSizing: "border-box",
-              textAlign: "center",
-            }}
-          >
-            <h2>관리자 페이지</h2>
-
-            <p
-              style={{
-                marginTop: "12px",
-                marginBottom: "28px",
-              }}
-            >
-              관리자 비밀번호를 입력해주세요.
-            </p>
-
-            <input
-              type="password"
-              value={adminPassword}
-              onChange={(e) =>
-                setAdminPassword(
-                  e.target.value
-                )
-              }
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  loginAdmin();
-                }
-              }}
-              placeholder="비밀번호"
-              style={{
-                width: "100%",
-                padding: "14px",
-                boxSizing: "border-box",
-                borderRadius: "10px",
-                border: "1px solid #ccc",
-                fontSize: "16px",
-              }}
-            />
-
-            <button
-              onClick={loginAdmin}
-              disabled={adminLoading}
-              style={{
-                width: "100%",
-                marginTop: "12px",
-                padding: "14px",
-                border: "none",
-                borderRadius: "10px",
-                cursor: "pointer",
-                fontSize: "16px",
-              }}
-            >
-              {adminLoading
-                ? "확인 중..."
-                : "로그인"}
-            </button>
-
-            {adminError && (
-              <p
-                style={{
-                  marginTop: "16px",
-                  color: "crimson",
-                }}
-              >
-                {adminError}
-              </p>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    const ttsCharacters =
-      Number(ttsUsage?.characters || 0);
-
-    const translateCharacters =
-      Number(
-        translateUsage?.characters || 0
-      );
-
-    const ttsLimit = 1000000;
-    const translateLimit = 500000;
-
-    const ttsPercent = Math.min(
-      (ttsCharacters / ttsLimit) * 100,
-      100
-    );
-
-    const translatePercent =
-      Math.min(
-        (translateCharacters /
-          translateLimit) *
-          100,
-        100
-      );
+    const ttsCharacters = Number(ttsUsage?.characters ?? 0);
+    const translateCharacters = Number(translateUsage?.characters ?? 0);
 
     return (
       <div className="app">
         <h1
           onClick={() => setScreen("home")}
-          style={{
-            cursor: "pointer",
-          }}
+          style={{ cursor: "pointer" }}
         >
           PDF Reader
         </h1>
 
-        <div
-          style={{
-            maxWidth: "600px",
-            width: "100%",
-            margin: "40px auto",
-            padding: "30px",
-            boxSizing: "border-box",
-          }}
-        >
-          <h2>관리자 페이지</h2>
+        <div style={{ padding: "40px 20px", maxWidth: "700px", margin: "0 auto" }}>
+          <h2>사용량 확인</h2>
+          <p>이번 달 PDF Reader 전체 사용량입니다.</p>
 
-          <div
-            style={{
-              marginTop: "30px",
-              padding: "24px",
-              borderRadius: "16px",
-              background: "#f5f5f5",
-            }}
-          >
-            <h3>🔊 TTS</h3>
-
-            <p
-              style={{
-                fontSize: "28px",
-                fontWeight: "bold",
-                margin: "16px 0 8px",
-              }}
-            >
-              {ttsCharacters.toLocaleString()}자
-            </p>
-
-            <p>
-              이번 달 사용량 / 1,000,000자
-            </p>
-
-            <div
-              style={{
-                height: "12px",
-                background: "#ddd",
-                borderRadius: "10px",
-                overflow: "hidden",
-                marginTop: "16px",
-              }}
-            >
-              <div
-                style={{
-                  width: `${ttsPercent}%`,
-                  height: "100%",
-                  background: "#555",
-                }}
-              />
-            </div>
-
-            <p
-              style={{
-                textAlign: "right",
-                marginTop: "8px",
-              }}
-            >
-              {ttsPercent.toFixed(1)}%
-            </p>
+          <div style={{ marginTop: "30px", padding: "24px", border: "1px solid #ddd", borderRadius: "16px" }}>
+            <h3>TTS</h3>
+            <p>{ttsCharacters.toLocaleString()}자 / 1,000,000자</p>
           </div>
 
-          <div
-            style={{
-              marginTop: "20px",
-              padding: "24px",
-              borderRadius: "16px",
-              background: "#f5f5f5",
-            }}
-          >
-            <h3>🌐 번역</h3>
-
-            <p
-              style={{
-                fontSize: "28px",
-                fontWeight: "bold",
-                margin: "16px 0 8px",
-              }}
-            >
-              {translateCharacters.toLocaleString()}자
-            </p>
-
-            <p>
-              이번 달 사용량 / 500,000자
-            </p>
-
-            <div
-              style={{
-                height: "12px",
-                background: "#ddd",
-                borderRadius: "10px",
-                overflow: "hidden",
-                marginTop: "16px",
-              }}
-            >
-              <div
-                style={{
-                  width: `${translatePercent}%`,
-                  height: "100%",
-                  background: "#555",
-                }}
-              />
-            </div>
-
-            <p
-              style={{
-                textAlign: "right",
-                marginTop: "8px",
-              }}
-            >
-              {translatePercent.toFixed(1)}%
-            </p>
+          <div style={{ marginTop: "20px", padding: "24px", border: "1px solid #ddd", borderRadius: "16px" }}>
+            <h3>번역</h3>
+            <p>{translateCharacters.toLocaleString()}자 / 500,000자</p>
           </div>
 
           <button
@@ -4544,8 +4267,9 @@ setScreen("reader");
               marginTop: "30px",
               padding: "12px 20px",
               borderRadius: "10px",
-              border: "1px solid #ccc",
-              cursor: "pointer",
+              border: "1px solid #ddd",
+              background: "white",
+              cursor: "pointer"
             }}
           >
             홈으로
@@ -4554,9 +4278,7 @@ setScreen("reader");
       </div>
     );
   }
-  // =========================
-  // 홈 화면
-  // =========================
+=======
 
   if (
     screen === "home"
@@ -6544,6 +6266,7 @@ setScreen("reader");
 }
 
 export default App;
+
 
 
 
