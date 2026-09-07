@@ -5601,7 +5601,43 @@ setScreen("reader");
           </div>
 
           <div className="app-message">
-            <button onClick={() => setScreen("admin")} style={{background:"none",border:"none",padding:0,cursor:"pointer",color:"inherit",font:"inherit"}}>테레사에게. 나랑 같이 공부해줘서 고마워요.</button>
+            <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+  }}
+>
+  <span style={{ fontSize: "12px", color: "#888" }}>
+    TTS{" "}
+    {ttsUsage
+      ? ((ttsUsage.characters / ttsUsage.limit) * 100).toFixed(1)
+      : "0.0"}
+    %
+  </span>
+
+  <button
+    onClick={() => setScreen("admin")}
+    style={{
+      background: "none",
+      border: "none",
+      padding: 0,
+      cursor: "pointer",
+      color: "inherit",
+      font: "inherit",
+    }}
+  >
+    테레사에게. 나랑 같이 공부해줘서 고마워요.
+  </button>
+
+  <span style={{ fontSize: "12px", color: "#888" }}>
+    {translateUsage
+      ? ((translateUsage.characters / translateUsage.limit) * 100).toFixed(1)
+      : "0.0"}
+    % 번역
+  </span>
+</div>
           </div>
         </div>
       </div>
@@ -6265,6 +6301,7 @@ setScreen("reader");
 }
 
 export default App;
+
 
 
 
