@@ -2,7 +2,18 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const getRedis = async () => {
+  const { Redis } = await import("@upstash/redis");
 
+  return new Redis({
+    url:
+      process.env.KV_REST_API_URL ||
+      process.env.REDIS_URL,
+
+    token:
+      process.env.KV_REST_API_TOKEN,
+  });
+};
 const app = express();
 
 app.use(cors());
@@ -73,7 +84,18 @@ app.post("/api/tts", async (req, res) => {
 
       return res.status(response.status).json(data);
     }
+try {
+  const redis = await getRedis();
+  const today = new Date();
+  const year = today.getUTCFullYear();
+  const month = String(today.getUTCMonth() + 1).padStart(2, "0");
+  const usageKey = `tts:chars:${year}-${month}`;
+  const characterCount = Array.from(text).length;
 
+  await redis.incrby(usageKey, characterCount);
+} catch (usageError) {
+  console.error("TTS 사용량 기록 오류:", usageError);
+}
     res.json({
       audioContent: data.audioContent,
     });
@@ -194,7 +216,18 @@ app.post("/api/translate", async (req, res) => {
         };
       })
     );
+try {
+  const redis = await getRedis();
+  const today = new Date();
+  const year = today.getUTCFullYear();
+  const month = String(today.getUTCMonth() + 1).padStart(2, "0");
+  const usageKey = `translate:chars:${year}-${month}`;
+  const characterCount = Array.from(text).length;
 
+  await redis.incrby(usageKey, characterCount);
+} catch (usageError) {
+  console.error("번역 사용량 기록 오류:", usageError);
+}
     res.json({
       originalText: text,
       sourceLanguage,
@@ -215,6 +248,61 @@ app.post("/api/translate", async (req, res) => {
   }
 });
 
+app.get("/api/tts-usage", async (req, res) => {
+  try {
+    const redis = await getRedis();
+
+    const today = new Date();
+    const year = today.getUTCFullYear();
+    const month = String(today.getUTCMonth() + 1).padStart(2, "0");
+
+    const usageKey = `tts:chars:${year}-${month}`;
+
+    const characters = Number(
+      (await redis.get(usageKey)) || 0
+    );
+
+    return res.status(200).json({
+      month: `${year}-${month}`,
+      characters,
+      limit: 1000000,
+    });
+  } catch (error) {
+    console.error("TTS 사용량 조회 오류:", error);
+
+    return res.status(500).json({
+      error: "사용량을 불러오는 중 오류가 발생했습니다.",
+    });
+  }
+});
+
+app.get("/api/translate-usage", async (req, res) => {
+  try {
+    const redis = await getRedis();
+
+    const today = new Date();
+    const year = today.getUTCFullYear();
+    const month = String(today.getUTCMonth() + 1).padStart(2, "0");
+
+    const usageKey = `translate:chars:${year}-${month}`;
+
+    const characters = Number(
+      (await redis.get(usageKey)) || 0
+    );
+
+    return res.status(200).json({
+      month: `${year}-${month}`,
+      characters,
+      limit: 500000,
+    });
+  } catch (error) {
+    console.error("번역 사용량 조회 오류:", error);
+
+    return res.status(500).json({
+      error: "사용량을 불러오는 중 오류가 발생했습니다.",
+    });
+  }
+});
 
 app.listen(3001, () => {
   console.log(

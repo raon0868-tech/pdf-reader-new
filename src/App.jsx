@@ -1696,6 +1696,7 @@ function App() {
   const [translateUsage, setTranslateUsage] =
     useState(null);
 
+
   const canvasRef =
     useRef(null);
 
@@ -1732,6 +1733,32 @@ function App() {
       screen
     );
   }, [screen, isInitializing]);
+  useEffect(() => {
+        const loadUsage = async () => {
+      try {
+        const [ttsResponse, translateResponse] =
+          await Promise.all([
+            fetch("/api/tts-usage"),
+            fetch("/api/translate-usage"),
+          ]);
+
+        if (ttsResponse.ok) {
+          const ttsData = await ttsResponse.json();
+          setTtsUsage(ttsData);
+        }
+
+        if (translateResponse.ok) {
+          const translateData =
+            await translateResponse.json();
+          setTranslateUsage(translateData);
+        }
+      } catch (error) {
+        console.error("사용량 조회 오류:", error);
+      }
+    };
+
+    loadUsage();
+  }, []);
 
   const [pdf, setPdf] =
     useState(null);
@@ -1796,6 +1823,11 @@ function App() {
     translationResult,
     setTranslationResult,
   ] = useState(null);
+
+  const [
+    translationQuery,
+    setTranslationQuery,
+  ] = useState("");
 
   const [
     translationOpen,
@@ -2763,9 +2795,7 @@ useEffect(() => {
   // =========================
 
   useEffect(() => {
-    if (
-      !translationText.trim()
-    ) {
+    if (!translationQuery.trim()) {
       return;
     }
 
@@ -2790,7 +2820,7 @@ useEffect(() => {
                 body:
                   JSON.stringify({
                     text:
-                      translationText.trim(),
+                      translationQuery.trim(),
 
                     language,
                   }),
@@ -2828,7 +2858,7 @@ useEffect(() => {
 
     translateText();
   }, [
-    translationText,
+    translationQuery,
     language,
   ]);
 
@@ -2950,6 +2980,19 @@ useEffect(() => {
         }
 
         setTranslationText(
+          text
+        );
+
+        if (text.length > 500) {
+          setTranslationResult({
+            error:
+              "선택한 텍스트가 너무 깁니다. 필요한 부분만 검색창에서 수정한 뒤 검색해 주세요.",
+          });
+
+          return;
+        }
+
+        setTranslationQuery(
           text
         );
       };
@@ -3730,31 +3773,42 @@ setScreen("reader");
 
           let meaning = "";
 
+          const currentWord =
+            selectedText.trim();
+
+          const translationMatchesCurrentWord =
+            translationText.trim() ===
+            currentWord;
+
           if (
-            language ===
-            "ko-KR"
+            translationMatchesCurrentWord
           ) {
-            const danishTranslation =
-              translations.find(
-                (translation) =>
-                  translation.languageName ===
-                  "Dansk"
-              );
+            if (
+              language ===
+              "ko-KR"
+            ) {
+              const danishTranslation =
+                translations.find(
+                  (translation) =>
+                    translation.languageName ===
+                    "Dansk"
+                );
 
-            meaning =
-              danishTranslation?.text?.trim() ||
-              "";
-          } else {
-            const koreanTranslation =
-              translations.find(
-                (translation) =>
-                  translation.languageName ===
-                  "한국어"
-              );
+              meaning =
+                danishTranslation?.text?.trim() ||
+                "";
+            } else {
+              const koreanTranslation =
+                translations.find(
+                  (translation) =>
+                    translation.languageName ===
+                    "한국어"
+                );
 
-            meaning =
-              koreanTranslation?.text?.trim() ||
-              "";
+              meaning =
+                koreanTranslation?.text?.trim() ||
+                "";
+            }
           }
 
           const today =
@@ -3815,9 +3869,10 @@ setScreen("reader");
 
   const speakTranslationText =
     async () => {
-      if (
-        !translationText.trim()
-      ) {
+      const textToSpeak =
+        translationText.trim();
+
+      if (!textToSpeak) {
         return;
       }
 
@@ -3836,7 +3891,7 @@ setScreen("reader");
               body:
                 JSON.stringify({
                   text:
-                    translationText.trim(),
+                    textToSpeak,
 
                   language,
                 }),
@@ -3866,33 +3921,83 @@ setScreen("reader");
 
         if (
           rememberedPdf?.id &&
-          translationText.trim()
+          textToSpeak
         ) {
-          await recordWordPlayToDatabase(
-            translationText.trim(),
-            language,
-            rememberedPdf.id,
-            selectedDate
+          const translations =
+            translationResult?.translations ||
+            [];
+
+          let meaning = "";
+
+          const currentTranslationMatches =
+            translationQuery.trim() ===
+            textToSpeak;
+
+          if (
+            currentTranslationMatches
+          ) {
+            if (
+              language ===
+              "ko-KR"
+            ) {
+              const danishTranslation =
+                translations.find(
+                  (translation) =>
+                    translation.languageName ===
+                    "Dansk"
+                );
+
+              meaning =
+                danishTranslation?.text?.trim() ||
+                "";
+            } else {
+              const koreanTranslation =
+                translations.find(
+                  (translation) =>
+                    translation.languageName ===
+                    "한국어"
+                );
+
+              meaning =
+                koreanTranslation?.text?.trim() ||
+                "";
+            }
+          }
+
+          const today =
+            getLocalDateString();
+
+          setSelectedDate(
+            today
           );
+
+          await saveWordToDatabase({
+            word:
+              textToSpeak,
+
+            language,
+
+            pdfId:
+              rememberedPdf.id,
+
+            originalForm:
+              textToSpeak,
+
+            displayForm:
+              textToSpeak,
+
+            meaning,
+          });
 
           const words =
             await getTodayWordsFromDatabase(
               rememberedPdf.id,
               language,
-              selectedDate
+              today
             );
 
           setTodayWords(
             words
-          );
-
-          const dates =
-  await getStudyDatesFromDatabase(
-    language
-  );
-
-          setStudyDates(
-            dates
           );
         }
       } catch (error) {
@@ -5597,7 +5702,7 @@ setScreen("reader");
 
         <div className="app-signature">
           <div className="app-version">
-            v0.2.2
+            v0.3.0
           </div>
 
           <div className="app-message">
@@ -5879,71 +5984,110 @@ setScreen("reader");
       {translationOpen && (
         <div className="dictionary-panel">
           <h3>
-            🌐 Translation
+            📖 Learning
           </h3>
 
           <div className="translation-original">
-            <span>
-              {
+            <input
+              type="text"
+              value={
                 translationText
               }
-            </span>
+              onChange={(
+                event
+              ) => {
+                setTranslationText(
+                  event.target.value
+                );
+              }}
+              onKeyDown={(
+                event
+              ) => {
+                if (
+                  event.key ===
+                  "Enter"
+                ) {
+                  const query =
+                    translationText.trim();
+
+                  if (!query) {
+                    return;
+                  }
+
+                  if (
+                    query.length > 500
+                  ) {
+                    setTranslationResult({
+                      error:
+                        "검색어가 너무 깁니다. 필요한 부분만 검색해 주세요.",
+                    });
+
+                    return;
+                  }
+
+                  setTranslationQuery(
+                    query
+                  );
+                }
+              }}
+              placeholder="단어나 문장을 입력하세요"
+            />
+
+            <button
+              className="translation-search-button"
+              onMouseDown={(
+                event
+              ) => {
+                event.preventDefault();
+              }}
+              onClick={() => {
+                const query =
+                  translationText.trim();
+
+                if (!query) {
+                  return;
+                }
+
+                if (
+                  query.length > 500
+                ) {
+                  setTranslationResult({
+                    error:
+                      "검색어가 너무 깁니다. 필요한 부분만 검색해 주세요.",
+                  });
+
+                  return;
+                }
+
+                setTranslationQuery(
+                  query
+                );
+              }}
+              disabled={
+                !translationText.trim()
+              }
+              title="검색"
+            >
+              🔍
+            </button>
 
             <button
               className="translation-speak-button"
+              onMouseDown={(
+                event
+              ) => {
+                event.preventDefault();
+              }}
               onClick={
                 speakTranslationText
               }
-              title="원문 듣기"
+              disabled={
+                !translationText.trim()
+              }
+              title="발음 듣기"
             >
               🔊
             </button>
-          </div>
-
-          <div className="pronunciation-panel">
-            <h3>
-              🔊 Pronunciation
-            </h3>
-
-            <div className="pronunciation-input-row">
-              <input
-                type="text"
-                value={
-                  ttsText
-                }
-                onChange={(
-                  event
-                ) => {
-                  setTtsText(
-                    event.target
-                      .value
-                  );
-                }}
-                onKeyDown={(
-                  event
-                ) => {
-                  if (
-                    event.key ===
-                    "Enter"
-                  ) {
-                    speakInputText();
-                  }
-                }}
-                placeholder="단어나 문장을 입력하세요"
-              />
-
-              <button
-                onClick={
-                  speakInputText
-                }
-                disabled={
-                  !ttsText.trim()
-                }
-                title="발음 듣기"
-              >
-                🔊
-              </button>
-            </div>
           </div>
 
           {translationResult?.error ? (
@@ -6301,6 +6445,20 @@ setScreen("reader");
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

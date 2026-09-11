@@ -1,8 +1,8 @@
-
+﻿
 /* =========================================================
    PDF Reader
    v0.2.1 Design
-   기능/데이터 로직은 건드리지 않고 화면만 정돈
+   湲곕뒫/?곗씠??濡쒖쭅? 嫄대뱶由ъ? ?딄퀬 ?붾㈃留??뺣룉
    ========================================================= */
 
 * {
@@ -298,6 +298,16 @@ h1 {
 
   font-weight: bold;
   font-size: 15px;
+}
+
+.translation-original input {
+  flex: 1;
+  min-width: 0;
+}
+
+.translation-search-button,
+.translation-speak-button {
+  flex-shrink: 0;
 }
 
 .translation-speak-button {
@@ -1146,3 +1156,4 @@ h1 {
     width: 220px;
   }
 }
+
