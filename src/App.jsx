@@ -671,6 +671,23 @@ const saveOcrDataToDatabase =
 // 단어 저장
 // =========================
 
+const getWordMeaningFromDatabase = async (wordId) => {
+  const database = await openDatabase();
+
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction("words", "readonly");
+    const store = transaction.objectStore("words");
+    const request = store.get(wordId);
+
+    request.onsuccess = () => {
+      resolve(request.result?.meaning || "");
+    };
+
+    request.onerror = () => {
+      reject(request.error);
+    };
+  });
+};
 const saveWordToDatabase =
   async ({
     word,
@@ -4997,7 +5014,7 @@ setScreen("reader");
     word.id
   }
   className="home-word-item"
-  onContextMenu={(event) => {
+  onContextMenu={async (event) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -6206,7 +6223,7 @@ setScreen("reader");
           <div
             key={word.id}
             className="today-word-item"
-            onContextMenu={(event) => {
+            onContextMenu={async (event) => {
   event.preventDefault();
   event.stopPropagation();
 
@@ -6445,6 +6462,7 @@ setScreen("reader");
 }
 
 export default App;
+
 
 
 
